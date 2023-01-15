@@ -76,8 +76,8 @@ public class BasketballFlightSimulation extends JFrame {
         Position y0 = new Position(1.6, PositionUnit.METER);
 
         Speed v0 = new Speed(throwingSpeed.doubleValue(), SpeedUnit.METER_PER_SECOND);
-        Speed vX0 = new Speed(v0.doubleValue() * Math.sin(angleInRad.doubleValue()), SpeedUnit.METER_PER_SECOND);
-        Speed vY0 = new Speed(v0.doubleValue() * Math.cos(angleInRad.doubleValue()), SpeedUnit.METER_PER_SECOND);
+        Speed vX0 = new Speed(v0.doubleValue() * Math.cos(angleInRad.doubleValue()), SpeedUnit.METER_PER_SECOND);
+        Speed vY0 = new Speed(v0.doubleValue() * Math.sin(angleInRad.doubleValue()), SpeedUnit.METER_PER_SECOND);
 
         Speed vX;
         Speed vY;
