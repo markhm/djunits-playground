@@ -1,0 +1,138 @@
+package dk.mhm;
+
+import org.djunits.unit.*;
+import org.djunits.value.vdouble.scalar.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
+
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Example of a basketball that is thrown by a player from 1.6 meters high under a 45-degree angle with a certain speed.
+ * At which speed will it go through the hoop at 8 meters distance, which is 3.05 m high...?
+ */
+public class BasketballFlightSimulation extends JFrame {
+
+    private static Acceleration GRAVITY = new Acceleration(9.8, AccelerationUnit.METER_PER_SECOND_2);
+
+    public BasketballFlightSimulation() {
+        super("");
+
+        JPanel chartPanel = createChartPanel();
+        add(chartPanel, BorderLayout.CENTER);
+
+        setSize(1024, 768);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+    }
+
+    private static JPanel createChartPanel() {
+        String chartTitle = "Basketball flight simulation";
+        String categoryAxisLabel = "X";
+        String valueAxisLabel = "Y";
+
+        DefaultXYDataset dataset = new DefaultXYDataset();
+
+        Angle angle35 = new Angle(35, AngleUnit.DEGREE);
+        dataset.addSeries("35 deg", createModelAndOutput(angle35));
+
+        Angle angle45 = new Angle(45, AngleUnit.DEGREE);
+        dataset.addSeries("45 deg", createModelAndOutput(angle45));
+
+        Angle angle55 = new Angle(55, AngleUnit.DEGREE);
+        dataset.addSeries("55 deg", createModelAndOutput(angle55));
+
+        JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, categoryAxisLabel, valueAxisLabel, dataset);
+
+        return new ChartPanel(chart);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new BasketballFlightSimulation().setVisible(true);
+            }
+        });
+    }
+
+    private static double[][] createModelAndOutput(Angle angleInDeg) {
+        Speed throwingSpeed = new Speed(13.9, SpeedUnit.METER_PER_SECOND);
+
+        Mass basketball = new Mass(8, MassUnit.POUND);
+        Length distance = new Length (8, LengthUnit.METER);
+        Length basketHeight = new Length (3.05, LengthUnit.METER);
+
+        Angle angleInRad = new Angle(angleInDeg.getInUnit(AngleUnit.RADIAN), AngleUnit.RADIAN);
+
+        Time startTime = new Time(0, TimeUnit.BASE_SECOND);
+        Time deltaTime = new Time(30, TimeUnit.BASE_MILLISECOND);
+
+        Position x0 = new Position(0, PositionUnit.METER);
+        Position y0 = new Position(1.6, PositionUnit.METER);
+
+        Speed v0 = new Speed(throwingSpeed.doubleValue(), SpeedUnit.METER_PER_SECOND);
+        Speed vX0 = new Speed(v0.doubleValue() * Math.sin(angleInRad.doubleValue()), SpeedUnit.METER_PER_SECOND);
+        Speed vY0 = new Speed(v0.doubleValue() * Math.cos(angleInRad.doubleValue()), SpeedUnit.METER_PER_SECOND);
+
+        Speed vX;
+        Speed vY;
+
+        Length distanceMargin = new Length(10, LengthUnit.CENTIMETER);
+
+        Position x = new Position(x0.doubleValue(), PositionUnit.METER);
+        Position y = new Position(y0.doubleValue(), PositionUnit.METER);
+
+        int numberOfDataPoints = 100;
+        double[][] data = new double[2][numberOfDataPoints];
+
+        Time currentTime;
+        int timeCounter = 0;
+        while (y.doubleValue() > 0) {
+
+            currentTime = new Time(startTime.doubleValue() + (timeCounter * deltaTime.doubleValue()), TimeUnit.BASE_SECOND);
+
+            vX = vX0;
+            vY = new Speed((vY0.doubleValue() - (deltaTime.doubleValue() * timeCounter) * GRAVITY.doubleValue()), SpeedUnit.METER_PER_SECOND);
+            x = new Position(x0.doubleValue() + vX.doubleValue() * currentTime.doubleValue(), PositionUnit.METER);
+            y = new Position(y0.doubleValue() + vY.doubleValue() * currentTime.doubleValue(), PositionUnit.METER);
+
+            if (Math.abs(distance.doubleValue() - x.doubleValue()) < distanceMargin.doubleValue() &&
+                    Math.abs(basketHeight.doubleValue() - y.doubleValue()) < distanceMargin.doubleValue() ) {
+
+                System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "] - SCORE..!");
+            } else {
+                System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "]");
+            }
+            // System.out.println("[vX,vY] = [" + vX + ", " + vY + "]");
+
+            data[0][timeCounter] = x.doubleValue();
+            data[1][timeCounter] = y.doubleValue();
+
+            timeCounter++;
+            System.out.println("timeCounter: " + timeCounter);
+        }
+        return data;
+    }
+
+    private static XYDataset createDataset() {
+
+        DefaultXYDataset dataset = new DefaultXYDataset();
+
+        String series1 = "Curve";
+
+        double[][] data = new double[2][10];
+
+        for (int i = 0; i < 10; i++) {
+            data[0][i] = i;
+            data[1][i] = Math.random() * 100;
+        }
+        dataset.addSeries(series1, data);
+
+        return dataset;
+    }
+}
