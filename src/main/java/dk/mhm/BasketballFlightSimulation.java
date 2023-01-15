@@ -37,6 +37,9 @@ public class BasketballFlightSimulation extends JFrame {
 
         DefaultXYDataset dataset = new DefaultXYDataset();
 
+        Angle angle25 = new Angle(25, AngleUnit.DEGREE);
+        dataset.addSeries("25 deg", createModelAndOutput(angle25));
+
         Angle angle35 = new Angle(35, AngleUnit.DEGREE);
         dataset.addSeries("35 deg", createModelAndOutput(angle35));
 
@@ -45,6 +48,9 @@ public class BasketballFlightSimulation extends JFrame {
 
         Angle angle55 = new Angle(55, AngleUnit.DEGREE);
         dataset.addSeries("55 deg", createModelAndOutput(angle55));
+
+        Angle angle65 = new Angle(65, AngleUnit.DEGREE);
+        dataset.addSeries("65 deg", createModelAndOutput(angle65));
 
         JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, categoryAxisLabel, valueAxisLabel, dataset);
 
