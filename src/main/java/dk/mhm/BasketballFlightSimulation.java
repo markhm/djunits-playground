@@ -38,19 +38,19 @@ public class BasketballFlightSimulation extends JFrame {
         DefaultXYDataset dataset = new DefaultXYDataset();
 
         Angle angle25 = new Angle(25, AngleUnit.DEGREE);
-        dataset.addSeries("25 deg", createModelAndOutput(angle25));
+        dataset.addSeries("25 deg", createModelAndOutput(angle25, 28));
 
         Angle angle35 = new Angle(35, AngleUnit.DEGREE);
-        dataset.addSeries("35 deg", createModelAndOutput(angle35));
+        dataset.addSeries("35 deg", createModelAndOutput(angle35, 34));
 
         Angle angle45 = new Angle(45, AngleUnit.DEGREE);
-        dataset.addSeries("45 deg", createModelAndOutput(angle45));
+        dataset.addSeries("45 deg", createModelAndOutput(angle45, 40));
 
         Angle angle55 = new Angle(55, AngleUnit.DEGREE);
-        dataset.addSeries("55 deg", createModelAndOutput(angle55));
+        dataset.addSeries("55 deg", createModelAndOutput(angle55, 44));
 
         Angle angle65 = new Angle(65, AngleUnit.DEGREE);
-        dataset.addSeries("65 deg", createModelAndOutput(angle65));
+        dataset.addSeries("65 deg", createModelAndOutput(angle65, 48));
 
         JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, categoryAxisLabel, valueAxisLabel, dataset);
 
@@ -66,7 +66,7 @@ public class BasketballFlightSimulation extends JFrame {
         });
     }
 
-    private static double[][] createModelAndOutput(Angle angleInDeg) {
+    private static double[][] createModelAndOutput(Angle angleInDeg, int numberOfDataPoints) {
         Speed throwingSpeed = new Speed(13.9, SpeedUnit.METER_PER_SECOND);
 
         Mass basketball = new Mass(8, MassUnit.POUND);
@@ -93,7 +93,6 @@ public class BasketballFlightSimulation extends JFrame {
         Position x = new Position(x0.doubleValue(), PositionUnit.METER);
         Position y = new Position(y0.doubleValue(), PositionUnit.METER);
 
-        int numberOfDataPoints = 100;
         double[][] data = new double[2][numberOfDataPoints];
 
         Time currentTime;
@@ -110,9 +109,9 @@ public class BasketballFlightSimulation extends JFrame {
             if (Math.abs(distance.doubleValue() - x.doubleValue()) < distanceMargin.doubleValue() &&
                     Math.abs(basketHeight.doubleValue() - y.doubleValue()) < distanceMargin.doubleValue() ) {
 
-                System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "] - SCORE..!");
+                // System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "] - SCORE..!");
             } else {
-                System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "]");
+                // System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "]");
             }
             // System.out.println("[vX,vY] = [" + vX + ", " + vY + "]");
 
@@ -120,9 +119,25 @@ public class BasketballFlightSimulation extends JFrame {
             data[1][timeCounter] = y.doubleValue();
 
             timeCounter++;
-            System.out.println("timeCounter: " + timeCounter);
+            // System.out.println("timeCounter: " + timeCounter);
         }
+
+        evaluateLength(data);
+        // double[][] copy = Arrays.stream(data).map(double[]::clone).toArray(double[][]::new);
+
         return data;
+    }
+
+    private static void evaluateLength(double[][] data) {
+        int length = 0;
+        for (int i = 0; i < data[0].length ; i++) {
+            // System.out.println("[" + data[0][i] + ", " + data[1][i] + "]");
+            if (data[0][i] == 0 && data[1][i] == 0) {
+                length = i;
+                System.out.println("length = " + length);
+                break;
+            }
+        }
     }
 
     private static XYDataset createDataset() {
