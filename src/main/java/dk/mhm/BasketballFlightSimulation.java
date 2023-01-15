@@ -10,6 +10,7 @@ import org.jfree.data.xy.XYDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Example of a basketball that is thrown by a player from 1.6 meters high under a 45-degree angle with a certain speed.
@@ -37,20 +38,25 @@ public class BasketballFlightSimulation extends JFrame {
 
         DefaultXYDataset dataset = new DefaultXYDataset();
 
+        // 28
         Angle angle25 = new Angle(25, AngleUnit.DEGREE);
-        dataset.addSeries("25 deg", createModelAndOutput(angle25, 28));
+        dataset.addSeries("25 deg", createModelAndOutput(angle25));
 
+        // 34
         Angle angle35 = new Angle(35, AngleUnit.DEGREE);
-        dataset.addSeries("35 deg", createModelAndOutput(angle35, 34));
+        dataset.addSeries("35 deg", createModelAndOutput(angle35));
 
+        // 40
         Angle angle45 = new Angle(45, AngleUnit.DEGREE);
-        dataset.addSeries("45 deg", createModelAndOutput(angle45, 40));
+        dataset.addSeries("45 deg", createModelAndOutput(angle45));
 
+        // 44
         Angle angle55 = new Angle(55, AngleUnit.DEGREE);
-        dataset.addSeries("55 deg", createModelAndOutput(angle55, 44));
+        dataset.addSeries("55 deg", createModelAndOutput(angle55));
 
+        // 48
         Angle angle65 = new Angle(65, AngleUnit.DEGREE);
-        dataset.addSeries("65 deg", createModelAndOutput(angle65, 48));
+        dataset.addSeries("65 deg", createModelAndOutput(angle65));
 
         JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, categoryAxisLabel, valueAxisLabel, dataset);
 
@@ -66,7 +72,7 @@ public class BasketballFlightSimulation extends JFrame {
         });
     }
 
-    private static double[][] createModelAndOutput(Angle angleInDeg, int numberOfDataPoints) {
+    private static double[][] createModelAndOutput(Angle angleInDeg) {
         Speed throwingSpeed = new Speed(13.9, SpeedUnit.METER_PER_SECOND);
 
         Mass basketball = new Mass(8, MassUnit.POUND);
@@ -93,6 +99,7 @@ public class BasketballFlightSimulation extends JFrame {
         Position x = new Position(x0.doubleValue(), PositionUnit.METER);
         Position y = new Position(y0.doubleValue(), PositionUnit.METER);
 
+        int numberOfDataPoints = 100;
         double[][] data = new double[2][numberOfDataPoints];
 
         Time currentTime;
@@ -122,22 +129,44 @@ public class BasketballFlightSimulation extends JFrame {
             // System.out.println("timeCounter: " + timeCounter);
         }
 
-        evaluateLength(data);
-        // double[][] copy = Arrays.stream(data).map(double[]::clone).toArray(double[][]::new);
+        int length = evaluateLength(data);
+        double[][] truncatedArray = truncateArray(data, length);
 
-        return data;
+        return truncatedArray;
     }
 
-    private static void evaluateLength(double[][] data) {
+    /**
+     * Copy all the values of the old array to a new, shorter array
+     * @param data the old array
+     * @param newLength
+     * @return the new array with the old data up to the newLength
+     */
+    public static double[][] truncateArray(double[][] data, int newLength) {
+        double[][] target = new double[2][newLength];
+        for(int i=0; i < data.length ; i++) {
+            for (int j = 0; j < newLength; j++) {
+                // System.out.println("[" + i + ", " + j + "]");
+                target[i][j] = data[i][j];
+            }
+        }
+        return target;
+    }
+
+    /**
+     * Evaluate how long the array should actually be by determining when the contents is [0,0]
+     * @param data the array to be evaluated
+     * @return the length the array should actually be
+     */
+    private static int evaluateLength(double[][] data) {
         int length = 0;
         for (int i = 0; i < data[0].length ; i++) {
             // System.out.println("[" + data[0][i] + ", " + data[1][i] + "]");
             if (data[0][i] == 0 && data[1][i] == 0) {
                 length = i;
-                System.out.println("length = " + length);
                 break;
             }
         }
+        return length;
     }
 
     private static XYDataset createDataset() {
