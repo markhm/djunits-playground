@@ -10,7 +10,6 @@ import org.jfree.data.xy.XYDataset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 /**
  * Example of a basketball that is thrown by a player from 1.6 meters high under a 45-degree angle with a certain speed.
