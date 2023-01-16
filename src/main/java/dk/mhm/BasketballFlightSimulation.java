@@ -63,7 +63,6 @@ public class BasketballFlightSimulation extends JFrame {
     private static double[][] createModelAndOutput(Angle angleInDeg) {
         Speed throwingSpeed = new Speed(13.9, SpeedUnit.METER_PER_SECOND);
 
-        Mass basketball = new Mass(8, MassUnit.POUND);
         Length distance = new Length (8, LengthUnit.METER);
         Length basketHeight = new Length (3.05, LengthUnit.METER);
 
