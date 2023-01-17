@@ -1,6 +1,8 @@
+import dk.mhm.BasketballFlightSimulation;
 import dk.mhm.physics.Mechanics;
 import org.djunits.unit.*;
 import org.djunits.value.vdouble.scalar.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class DJUnitsExampleTest {
@@ -75,6 +77,30 @@ public class DJUnitsExampleTest {
         Length height = Mechanics.heightFromEnergy(kineticEnergy, mass);
 
         System.out.println("Height reached: " + height);
+    }
+
+    /**
+     * This is a Unit test...! Really nice and important.
+     *
+     * I've modified visibility of the BasketballFlightSimulation.createModelAndOutput(..) method from private
+     * to public, which means that it can be reached/called from this test class.
+     *
+     * You see that I use a piece of the code from the BasketballFlightSimulation. We define the angle and call
+     * the model to give the result as double[][].
+     *
+     * Then we use an 'assertion' to confirm that the expected result (28) is equal to the actual result.
+     *
+     * The beauty is that you can run such Unit tests automatically, which helps you to confirm that every part
+     * of your system is working.
+     *
+     * Try to run the test and see that you will get the result as you see here in the lower left corner (=green bar).
+     */
+    @Test
+    public void testNumberOfDataPoints() {
+        Angle angle25 = new Angle(25, AngleUnit.DEGREE);
+        double[][] data = BasketballFlightSimulation.createModelAndOutput(angle25);
+
+        Assertions.assertEquals(28, data[0].length);
     }
 
 }
