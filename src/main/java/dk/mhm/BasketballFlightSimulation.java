@@ -105,7 +105,7 @@ public class BasketballFlightSimulation extends JFrame {
         });
     }
 
-    private static double[][] createModelAndOutput(Angle angleInDeg) {
+    public static double[][] createModelAndOutput(Angle angleInDeg) {
         // Creates variable equal to the speed of the ball (13.9)
         Speed throwingSpeed = new Speed(13.9, SpeedUnit.METER_PER_SECOND);
 
