@@ -61,7 +61,7 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/Q*.*</exclude>
+                                <exclude></exclude>
                             </excludes>
                         </configuration>
                     </execution>
