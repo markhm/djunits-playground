@@ -57,7 +57,7 @@ public class ArrayUtils {
     public static void printDataset(double[][] data) {
         for(int i=0; i < data.length ; i++) {
             for (int j = 0; j < data[i].length; j++) {
-                System.out.println("[" + i + ", " + j + "]");
+                System.out.println("[" + data[0][j] + ", " + data[1][j] + "]");
             }
         }
     }
