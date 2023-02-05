@@ -48,31 +48,25 @@ public class SinePlotExample extends JFrame {
     private static DefaultXYDataset createSineDataset() {
 
         Time startTime = new Time(0, TimeUnit.BASE_SECOND);
-
         Time maxDuration = new Time(4 * Math.PI, TimeUnit.BASE_SECOND);
+        int timeCounter = 0;
         int numberOfDataPoints = 100;
+        double[][] data = new double[2][numberOfDataPoints];
 
+
+        // deltaTime is equal to the maxDuration divided by the numberOfDataPoints
         Time deltaTime = new Time((maxDuration.doubleValue() / numberOfDataPoints), TimeUnit.BASE_SECOND);
 
-        System.out.println("deltaTime: " + deltaTime);
-        System.out.println("maxDuration: " + maxDuration);
         Time currentTime = startTime;
 
         Position x;
         Position y;
 
-        double[][] data = new double[2][numberOfDataPoints];
-
-        int timeCounter = 0;
-
         while (currentTime.doubleValue() < maxDuration.doubleValue()) {
             x = new Position(Math.sin(currentTime.doubleValue()), PositionUnit.METER);
             y = new Position(Math.cos(currentTime.doubleValue()), PositionUnit.METER);
 
-            // Position coordinateToDisplay = x;
-            // System.out.println(currentTime + " - [" + currentTime.doubleValue() + ", " + coordinateToDisplay + "]");
-
-            System.out.println("[" + currentTime.doubleValue() + ", " + y.doubleValue() + "]");
+            // System.out.println("[" + currentTime.doubleValue() + ", " + y.doubleValue() + "]");
 
             data[0][timeCounter] = currentTime.doubleValue();
             data[1][timeCounter] = y.doubleValue();
@@ -82,14 +76,13 @@ public class SinePlotExample extends JFrame {
         }
 
         int arrayLength = ArrayUtils.evaluateLength(data);
-        System.out.println("arrayLength: " + arrayLength);
-        // Creates array of data type double equal to the data array but only up to the length AND COPIES THE DATA.
+        // Creates array of data type double equal to the data array but only up to the length and copies the data.
         double[][] truncatedArray = ArrayUtils.truncateArray(data, arrayLength);
 
         DefaultXYDataset dataset = new DefaultXYDataset(); // Creates a new dataset.
         dataset.addSeries("sine", truncatedArray);
 
-        // printDataset(data);
+        ArrayUtils.printDataset(data);
         return dataset;
     }
 }
