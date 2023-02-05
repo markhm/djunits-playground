@@ -17,7 +17,7 @@ import java.awt.*;
  */
 public class BasketballFlightSimulation extends JFrame {
 
-    // Defines the gravity's acceleration constant (= how quickly does something fall on earth)
+    // Defines the gravity's acceleration constant (= how quickly does something fall towards earth)
     private static Acceleration GRAVITY = new Acceleration(9.8, AccelerationUnit.METER_PER_SECOND_2);
 
     public BasketballFlightSimulation() {
@@ -110,7 +110,7 @@ public class BasketballFlightSimulation extends JFrame {
         Speed throwingSpeed = new Speed(13.9, SpeedUnit.METER_PER_SECOND);
 
         // Creates a Length object equal to the distance from the player to the player.
-        Length distance = new Length (8, LengthUnit.METER);
+        Length distance = new Length(8, LengthUnit.METER);
 
         // Creates a Length object equal to the height of the basket.
         Length basketHeight = new Length (3.05, LengthUnit.METER);
@@ -197,53 +197,12 @@ public class BasketballFlightSimulation extends JFrame {
 
         // Finds out how long the array should be by checking when the array both values from
         // both dimensions of the array are equal to 0.
-        int length = evaluateLength(data);
+        int length = ArrayUtils.evaluateLength(data);
 
         // Creates array of data type double equal to the data array but only up to the length AND COPIES THE DATA.
-        double[][] truncatedArray = truncateArray(data, length);
+        double[][] truncatedArray = ArrayUtils.truncateArray(data, length);
 
         return truncatedArray; // Returns the final array of data.
     }
 
-    /**
-     * Copy all the values of the old array to a new, shorter array
-     * @param data the old array
-     * @param newLength
-     * @return the new array with the old data up to the newLength
-     */
-    public static double[][] truncateArray(double[][] data, int newLength) {
-        // Creates an array of data type double where the first dimension has a length of 2 and the second has a
-        // length equal to the newLength parameter.
-        double[][] target = new double[2][newLength];
-
-        // Loop through the data array and sets the value for target in that
-        // position to the value of the data array in that position.
-        for(int i=0; i < data.length ; i++) {
-            for (int j = 0; j < newLength; j++) {
-                // System.out.println("[" + i + ", " + j + "]");
-                target[i][j] = data[i][j];
-            }
-        }
-        // returns the shorter array
-        return target;
-    }
-
-    /**
-     * Evaluate how long the array should actually be by determining when the contents is [0,0]
-     * @param data the array to be evaluated
-     * @return the length the array should actually be
-     */
-    private static int evaluateLength(double[][] data) {
-        int length = 0; // Creates integer variable set to 0.
-        for (int i = 0; i < data[0].length ; i++) {
-            // System.out.println("[" + data[0][i] + ", " + data[1][i] + "]");
-            if (data[0][i] == 0 && data[1][i] == 0) {
-                length = i;
-                break;
-            }
-        }
-        // loops through the data array and finds the iteration where the correspondent values in
-        // data[0] and data[1] are both equal to 0 and sets length equal to the iteration number.
-        return length; // Returns the length
-    }
 }
