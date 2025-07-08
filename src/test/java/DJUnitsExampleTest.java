@@ -7,6 +7,15 @@ import org.junit.jupiter.api.Test;
 
 public class DJUnitsExampleTest {
 
+    @Test
+    public void testForLaurits() {
+        Speed carSpeed = new Speed(360, SpeedUnit.KM_PER_HOUR);
+        System.out.println("Car speed: " + carSpeed);
+        double carSpeedInMperSecond = carSpeed.getInUnit(SpeedUnit.METER_PER_SECOND);
+        System.out.println("Car speed in m/s: " + carSpeedInMperSecond);
+
+    }
+
     /**
      * Example from the DJUnits manual at https://djunits.org/manual/.
      */
@@ -55,8 +64,8 @@ public class DJUnitsExampleTest {
         // calculating the kinetic energy of an object - E = 1/2 * M * v^2
         Mass mass = new Mass(1000, MassUnit.KILOGRAM);
         Speed speed = new Speed(50, SpeedUnit.METER_PER_SECOND);
-        Energy energy = Mechanics.kineticEnergy(mass, speed);
-        System.out.println("Energy = "+ energy);
+        Energy kineticEnergy = Mechanics.kineticEnergy(mass, speed);
+        System.out.println("Energy = "+ kineticEnergy);
 
         // even when we convert the mass to pounds and the speed to miles/hr, the total amount of kinetic energy is the same
         Mass convertedMass = new Mass(mass.getInUnit(MassUnit.POUND), MassUnit.POUND);

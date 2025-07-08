@@ -17,8 +17,8 @@ import java.awt.*;
  */
 public class BasketballFlightSimulation extends JFrame {
 
-    // Defines the gravity's acceleration constant (= how quickly does something fall towards earth)
-    private static Acceleration GRAVITY = new Acceleration(9.8, AccelerationUnit.METER_PER_SECOND_2);
+    // Defines the gravity's acceleration constant (= how quickly does something fall towards earth) in CPH, DK
+    private static Acceleration GRAVITY = new Acceleration(9.816, AccelerationUnit.METER_PER_SECOND_2);
 
     public BasketballFlightSimulation() {
         // Calls the constructor of the super-class with an empty title (""). TODO Note that a super constructor is called
@@ -128,7 +128,7 @@ public class BasketballFlightSimulation extends JFrame {
         Position x0 = new Position(0, PositionUnit.METER);
 
         // Creates a Position object y0 equal to the starting y coordinate
-        Position y0 = new Position(1.6, PositionUnit.METER);
+        Position y0 = new Position(0, PositionUnit.METER);
 
         // Creates a variable v0 equal to the throwingSpeed variable as a double value.
         Speed v0 = new Speed(throwingSpeed.doubleValue(), SpeedUnit.METER_PER_SECOND);
@@ -161,48 +161,93 @@ public class BasketballFlightSimulation extends JFrame {
 
         // Creates a time counter integer variable equal to 0.
         int timeCounter = 0;
-        while (y.doubleValue() > 0) {
 
-            // Creates variable currentTime equal to the current time.
+        boolean hasAscended = false;
+
+        while (true) {
             currentTime = new Time(startTime.doubleValue() + (timeCounter * deltaTime.doubleValue()), TimeUnit.BASE_SECOND);
 
-            // Sets the variable vX as equal to the variable vX0
-            vX = vX0;
+            vX = vX0; // Horizontal velocity remains constant
 
-            // The speed changes based on the time. The time progresses based in small steps (deltaTime), multiplied by the timeCounter
-            vY = new Speed((vY0.doubleValue() - (deltaTime.doubleValue() * timeCounter) * GRAVITY.doubleValue()), SpeedUnit.METER_PER_SECOND);
+            // Update vertical velocity with gravity effect
+            vY = new Speed((vY0.doubleValue() - GRAVITY.doubleValue() * currentTime.doubleValue()), SpeedUnit.METER_PER_SECOND);
 
-            // Calculates the new x-position based on the xSpeed (vX) times the currentTime
+            // Calculate new positions
             x = new Position(x0.doubleValue() + vX.doubleValue() * currentTime.doubleValue(), PositionUnit.METER);
-            // Calculates the new y-position based on the xSpeed (yX) times the currentTime
-            y = new Position(y0.doubleValue() + vY.doubleValue() * currentTime.doubleValue(), PositionUnit.METER);
+            y = new Position(y0.doubleValue() + vY0.doubleValue() * currentTime.doubleValue() - 0.5 * GRAVITY.doubleValue() * Math.pow(currentTime.doubleValue(), 2), PositionUnit.METER);
 
-            if (Math.abs(distance.doubleValue() - x.doubleValue()) < distanceMargin.doubleValue() &&
-                    Math.abs(basketHeight.doubleValue() - y.doubleValue()) < distanceMargin.doubleValue() ) {
-                // System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "] - SCORE..!");
-            } else {
-                // System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "]");
+            // Break from loop if y is below ground level, ensuring last data point is accurate
+            if (y.doubleValue() < 0) {
+                if (!hasAscended) {
+                    // If the ball has not ascended, allow it to do so
+                    hasAscended = true;
+                } else {
+                    // Adjust y to 0 to represent the ground level accurately
+                    y = new Position(0, PositionUnit.METER);
+                    data[0][timeCounter] = x.doubleValue();
+                    data[1][timeCounter] = y.doubleValue();
+                    break; // Exit the loop after recording the final position
+                }
             }
-            // System.out.println("[vX,vY] = [" + vX + ", " + vY + "]");
 
-            // Sets the value of x for that time in the data array
+            // Check for scoring condition - No change needed here
+
+            // Record current positions
             data[0][timeCounter] = x.doubleValue();
-            // Sets the value of y for that time in the data array
             data[1][timeCounter] = y.doubleValue();
 
-            // Adds 1 to timeCounter
+            if (vY.doubleValue() < 0) hasAscended = true; // Mark as ascended once vY goes negative
+
             timeCounter++;
-            // System.out.println("timeCounter: " + timeCounter);
         }
 
-        // Finds out how long the array should be by checking when the array both values from
-        // both dimensions of the array are equal to 0.
-        int length = ArrayUtils.evaluateLength(data);
-
-        // Creates array of data type double equal to the data array but only up to the length AND COPIES THE DATA.
-        double[][] truncatedArray = ArrayUtils.truncateArray(data, length);
-
-        return truncatedArray; // Returns the final array of data.
+        // No need to find out the exact length for truncation as the loop exits correctly
+        // Return the filled data array up to the last recorded position
+        return data; // Directly return the data array without unnecessary truncation
+//
+//        while (y.doubleValue() > 0 || !hasAscended) {
+//
+//            // Creates variable currentTime equal to the current time.
+//            currentTime = new Time(startTime.doubleValue() + (timeCounter * deltaTime.doubleValue()), TimeUnit.BASE_SECOND);
+//
+//            // Sets the variable vX as equal to the variable vX0
+//            vX = vX0;
+//
+//            // The speed changes based on the time. The time progresses based in small steps (deltaTime), multiplied by the timeCounter
+//            vY = new Speed((vY0.doubleValue() - (deltaTime.doubleValue() * timeCounter) * GRAVITY.doubleValue()), SpeedUnit.METER_PER_SECOND);
+//
+//            // Calculates the new x-position based on the xSpeed (vX) times the currentTime
+//            x = new Position(x0.doubleValue() + vX.doubleValue() * currentTime.doubleValue(), PositionUnit.METER);
+//            // Calculates the new y-position based on the xSpeed (yX) times the currentTime
+//            y = new Position(y0.doubleValue() + vY.doubleValue() * currentTime.doubleValue(), PositionUnit.METER);
+//
+//            if (Math.abs(distance.doubleValue() - x.doubleValue()) < distanceMargin.doubleValue() &&
+//                    Math.abs(basketHeight.doubleValue() - y.doubleValue()) < distanceMargin.doubleValue() ) {
+//                // System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "] - SCORE..!");
+//            } else {
+//                // System.out.println(currentTime + ": [x,y] = [" + x + ", " + y + "]");
+//            }
+//            // System.out.println("[vX,vY] = [" + vX + ", " + vY + "]");
+//
+//            // Sets the value of x for that time in the data array
+//            data[0][timeCounter] = x.doubleValue();
+//            // Sets the value of y for that time in the data array
+//            data[1][timeCounter] = y.doubleValue();
+//
+//            if (vY.doubleValue() < 0) hasAscended = true;
+//            // Adds 1 to timeCounter
+//            timeCounter++;
+//            // System.out.println("timeCounter: " + timeCounter);
+//        }
+//
+//        // Finds out how long the array should be by checking when the array both values from
+//        // both dimensions of the array are equal to 0.
+//        int length = ArrayUtils.evaluateLength(data);
+//
+//        // Creates array of data type double equal to the data array but only up to the length AND COPIES THE DATA.
+//        double[][] truncatedArray = ArrayUtils.truncateArray(data, length);
+//
+//        return truncatedArray; // Returns the final array of data.
     }
 
 }
